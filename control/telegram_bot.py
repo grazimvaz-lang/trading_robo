@@ -1,35 +1,18 @@
+import os
 import asyncio
-from telegram.ext import ApplicationBuilder, CommandHandler
-from config import settings
-from core.engine import TradingEngine
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-engine = TradingEngine()
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-async def start(update, context):
-    await update.message.reply_text("🤖 Bot ativo!")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🤖 Bot online e funcionando no Railway!")
 
-async def status(update, context):
-    await update.message.reply_text(f"SINAL ATUAL: {engine.last_signal}")
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📊 Robô ativo e aguardando sinais.")
 
 async def main():
-    print("🤖 Iniciando Bot do Telegram...")
-
-    app = (
-        ApplicationBuilder()
-        .token(settings.TELEGRAM_BOT_TOKEN)
-        .build()
-    )
+    app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("status", status))
-
-    # ⛔ NÃO FECHA LOOP – evita erro "event loop already running"
-    await app.initialize()
-    await app.start()
-    await app.updater.start_polling()
-    
-    # Mantém bot vivo sem fechar event loop
-    await asyncio.Event().wait()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    app.add_handler(CommandHandler("status",
