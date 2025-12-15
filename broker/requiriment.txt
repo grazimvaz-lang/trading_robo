@@ -1,0 +1,12 @@
+python-binance
+python-telegram-bot==20.7
+pandas
+numpy
+requests
+ta
+ccxt
+dateparser
+aiohttp
+websockets
+tzdata
+python-dateutil

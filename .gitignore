@@ -1,0 +1,18 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# VS Code
+.vscode/
+
+# Files pessoais / teste
+Untitled-1.txt
+
+# Logs
+*.log
+
+# Secrets
+.env
