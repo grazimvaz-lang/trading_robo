@@ -1,16 +1,17 @@
 import subprocess
 import time
+import sys
 
 print("🤖 Iniciando Engine + Telegram Bot...")
 
-# Caminho do Python correto (venv)
-PYTHON = r"./venv/Scripts/python.exe"
+PYTHON = sys.executable  # pega o python correto do ambiente
 
-# Inicia o engine em um processo separado
+# Inicia o engine
+print("🔌 Iniciando Engine...")
 subprocess.Popen([PYTHON, "-m", "core.engine"])
 
-# Espera 2 segundos antes de iniciar o bot
 time.sleep(2)
 
 # Inicia o bot do Telegram
+print("🤖 Iniciando Bot do Telegram...")
 subprocess.Popen([PYTHON, "-m", "control.telegram_bot"])
