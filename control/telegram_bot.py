@@ -1,52 +1,41 @@
 import os
-import asyncio
-from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    ContextTypes,
-)
+import time
 
-print("🤖 Iniciando Bot do Telegram...")
-
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-
-if not TELEGRAM_BOT_TOKEN:
-    raise RuntimeError("❌ TELEGRAM_BOT_TOKEN não definido nas variáveis de ambiente")
-
-
-# ===============================
-# Comandos
-# ===============================
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🚀 Bot online!\n\n"
-        "Comandos disponíveis:\n"
-        "/start - iniciar bot\n"
-        "/status - status do robô"
+try:
+    from telegram import Update
+    from telegram.ext import (
+        ApplicationBuilder,
+        CommandHandler,
+        ContextTypes
     )
+except Exception as e:
+    print("⚠️ Telegram desativado:", e)
+    ApplicationBuilder = None
 
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🤖 Robô online com sucesso!")
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "✅ Robô ativo\n"
-        "⏳ Aguardando sinais\n"
-        "🚄 Rodando no Railway"
-    )
+    await update.message.reply_text("📊 Status: robô ativo e aguardando sinais.")
 
+def main():
+    if not ApplicationBuilder:
+        print("⚠️ Biblioteca do Telegram não disponível.")
+        return
 
-# ===============================
-# Inicialização
-# ===============================
-async def main():
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    if not TOKEN:
+        print("❌ TELEGRAM_BOT_TOKEN não definido.")
+        return
+
+    app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("status", status))
 
-    print("✅ Bot do Telegram iniciado com sucesso")
-    await app.run_polling()
-
+    print("✅ Bot do Telegram iniciado")
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
