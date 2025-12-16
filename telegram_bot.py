@@ -1,36 +1,57 @@
-from telegram.ext import Updater, CommandHandler
-from config import TELEGRAM_TOKEN
-from state import set_robot_on, set_robot_off, is_robot_on
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-def start(update, context):
-    update.message.reply_text(
+import os
+
+# Estado global do robô
+BOT_LIGADO = False
+
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
         "🤖 Robô online.\n\n"
         "Comandos disponíveis:\n"
-        "/on - ligar robô\n"
+        "/on  - ligar robô\n"
         "/off - desligar robô\n"
         "/status - ver status"
     )
 
-def ligar(update, context):
-    set_robot_on()
-    update.message.reply_text("✅ Robô LIGADO (24h).")
 
-def desligar(update, context):
-    set_robot_off()
-    update.message.reply_text("⏸️ Robô DESLIGADO.")
+async def on(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_LIGADO
+    BOT_LIGADO = True
+    await update.message.reply_text("✅ Robô LIGADO (24h).")
 
-def status(update, context):
-    estado = "LIGADO" if is_robot_on() else "DESLIGADO"
-    update.message.reply_text(f"📊 Status atual: {estado}")
+
+async def off(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_LIGADO
+    BOT_LIGADO = False
+    await update.message.reply_text("⏸️ Robô DESLIGADO.")
+
+
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    texto = "🟢 Robô LIGADO" if BOT_LIGADO else "🔴 Robô DESLIGADO"
+    await update.message.reply_text(texto)
+
 
 def iniciar_bot():
-    updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
-    dp = updater.dispatcher
+    if not TOKEN:
+        print("❌ TELEGRAM_TOKEN não configurado")
+        return
 
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("on", ligar))
-    dp.add_handler(CommandHandler("off", desligar))
-    dp.add_handler(CommandHandler("status", status))
+    app = ApplicationBuilder().token(TOKEN).build()
 
-    updater.start_polling()
-    updater.idle()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("on", on))
+    app.add_handler(CommandHandler("off", off))
+    app.add_handler(CommandHandler("status", status))
+
+    print("🤖 Bot do Telegram iniciado")
+    app.run_polling()
+
+
+# Função que o trader vai consultar
+def robo_ligado():
+    return BOT_LIGADO
