@@ -1,26 +1,20 @@
 import threading
 import time
-from config import validate_config
+
 from telegram_bot import iniciar_bot
-from trader import executar_trader
+from trader import iniciar_trader
 
-def run_thread(func, name):
-    t = threading.Thread(target=func, name=name, daemon=True)
-    t.start()
-    return t
 
-if __name__ == "__main__":
-    missing = validate_config()
-    if missing:
-        print("❌ Variáveis faltando:", ", ".join(missing))
-        print("➡️ Verifique o arquivo .env")
-        raise SystemExit(1)
-
+def main():
     print("🚀 Robô 24h iniciado (Telegram + Trader)")
 
-    run_thread(iniciar_bot, "telegram")
-    run_thread(executar_trader, "trader")
+    # Inicia o trader em uma thread separada (loop contínuo)
+    trader_thread = threading.Thread(target=iniciar_trader, daemon=True)
+    trader_thread.start()
 
-    # mantém o processo vivo
-    while True:
-        time.sleep(60)
+    # Inicia o bot do Telegram (loop próprio async)
+    iniciar_bot()
+
+
+if __name__ == "__main__":
+    main()
