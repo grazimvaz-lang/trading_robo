@@ -1,53 +1,36 @@
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    ContextTypes
+)
 import os
+import asyncio
+import logging
 
-BOT_LIGADO = False
-TOKEN = os.getenv("TELEGRAM_TOKEN")
+# ===============================
+# CONFIGURAÇÃO DE LOG
+# ===============================
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
+logger = logging.getLogger(__name__)
 
+# ===============================
+# TOKEN DO TELEGRAM
+# ===============================
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+if not TELEGRAM_TOKEN:
+    raise RuntimeError("TELEGRAM_TOKEN não encontrado nas variáveis de ambiente")
+
+# ===============================
+# COMANDOS DO BOT
+# ===============================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🤖 Robô online.\n\n"
-        "Comandos disponíveis:\n"
-        "/on  - ligar robô\n"
-        "/off - desligar robô\n"
-        "/status - ver status"
-    )
-
-
-async def on(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global BOT_LIGADO
-    BOT_LIGADO = True
-    await update.message.reply_text("✅ Robô LIGADO (24h).")
-
-
-async def off(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global BOT_LIGADO
-    BOT_LIGADO = False
-    await update.message.reply_text("⏸️ Robô DESLIGADO.")
-
-
-async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    texto = "🟢 Robô LIGADO" if BOT_LIGADO else "🔴 Robô DESLIGADO"
-    await update.message.reply_text(texto)
-
-
-def iniciar_bot():
-    if not TOKEN:
-        print("❌ TELEGRAM_TOKEN não configurado")
-        return
-
-    app = ApplicationBuilder().token(TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("on", on))
-    app.add_handler(CommandHandler("off", off))
-    app.add_handler(CommandHandler("status", status))
-
-    print("🤖 Bot do Telegram iniciado")
-    app.run_polling()
-
-
-def robo_ligado():
-    return BOT_LIGADO
+        "🤖 Robô de negociação ONLINE!\n\n"
+        "Estou rodando 24h no Railway.\n"
+        "Aguardando
