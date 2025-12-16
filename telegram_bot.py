@@ -1,11 +1,8 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-
 import os
 
-# Estado global do robô
 BOT_LIGADO = False
-
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 
@@ -52,6 +49,5 @@ def iniciar_bot():
     app.run_polling()
 
 
-# Função que o trader vai consultar
 def robo_ligado():
     return BOT_LIGADO
